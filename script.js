@@ -1,3 +1,45 @@
+/**
+Тестовое задание, желательно выполнить на C#, результат выложите на GitHub, будут вопросы - пишите. 
+Так же напишите ориентировочный срок сколько вам потребуется на выполнение задания.
+Есть круглый стол для игры в покер для каждого из сидящих за столом было одинаковое количество фишек.
+Но кто-то переставил все фишки так, что они перестали быть равномерно распределенными!
+Теперь нужно перераспределить фишки так, чтобы у каждого места был одинаковое количество
+Но чтобы не потерять ни одной фишки в процессе передвигать фишки можно только между соседними местами.
+Более того, надо передвигать фишки только по одной за раз. Каково минимальное количество ходов фишек
+Что нужно будет сделать, чтобы вернуть равное количество?
+Input:
+
+chips: [1, 5, 9, 10, 5]
+
+6 
+
+
+Expected Output:
+
+12
+
+
+Test 2
+Input:
+
+chips: [1, 2, 3]
+
+
+Expected Output:
+
+1
+
+
+Test 3
+Input:
+
+chips: [0, 1, 1, 1, 1, 1, 1, 1, 1, 2]
+
+Expected Output:
+
+1
+ * */
+
 
 function handleClick() {
 	console.log("handleClick");
@@ -51,99 +93,26 @@ function main() {
 
 function getNumberOfSwaps(chips) {
 
-	var numMoves = 0;
-	var total = 0;
-	var count = chips.length;
-	var minIndex = 0;
-	var maxIndex = 0;
+	const a = chips;
 
-	var updatedChips = [];
-
-	if (count == 0) {
+	if (a.length == 0) {
     	return 0;
     }
 
-	for (var i = 0; i < chips.length; i += 1) {
-		total += chips[i];
-		if (chips[i] < chips[minIndex]) {
-			minIndex = i;
-		}
-		if (chips[i] > maxIndex) {
-			maxIndex = i;
-		}
-		updatedChips[i] = chips[i];
-	}
+    var total =  a.reduce((acc, val) => acc + val, 0);
 
-	if (total % count != 0) 
+	if (total % a.length != 0) 
     {
         return -1;
     }
 
-    if (updatedChips[maxIndex] == updatedChips[minIndex]) {
-    	return 0;
-    }
-
-	while (maxIndex != minIndex) {
-		if (minIndex < maxIndex) {
-			if (maxIndex - minIndex > count / 2) {
-                updatedChips[maxIndex] -= 1;
-                if (maxIndex < count - 1) {
-                    maxIndex += 1;
-                }
-                else { 
-                	maxIndex = 0; 
-                }
-                updatedChips[maxIndex] += 1;
-            } else {
-                updatedChips[maxIndex] -= 1;
-                if (maxIndex > 0) {
-                    maxIndex -= 1;
-                }
-                else { 
-                	maxIndex = count - 1;
-                }
-                updatedChips[maxIndex] += 1;
-            }
-		} else {
-            if (minIndex - maxIndex < count / 2) {
-                updatedChips[maxIndex] -= 1;
-                if (maxIndex < count - 1) {
-                    maxIndex += 1;
-                }
-                else { 
-                	maxIndex = 0; 
-                }
-                updatedChips[maxIndex] += 1;
-            }
-            else {
-                updatedChips[maxIndex] -= 1;
-                if (maxIndex > 0) {
-                    maxIndex -= 1;
-                }
-                else { 
-                	maxIndex = count - 1; 
-                }
-                updatedChips[maxIndex] += 1;
-            }
-        }
-
-        numMoves += 1; 
-        minIndex = 0; 
-        maxIndex = 0;
-
-        for (var i = 0; i < count; i += 1) { 
-            if (updatedChips[i] < updatedChips[minIndex]) {
-                minIndex = i;
-            }
-            if (updatedChips[i] > updatedChips[maxIndex]) {
-                maxIndex = i;
-            }
-        }
-
-	}
-
-	return numMoves;
-
+    const mean = total / a.length;
+    const s = a.reduce((acc, val, index) => {
+    	acc.push((acc[index - 1] || 0) + (val - mean));
+    	return acc;
+   	}, []);
+  	const median = s.slice().sort((x, y) => x - y)[Math.floor(s.length / 2)];
+  	return s.reduce((acc, val) => acc + Math.abs(val - median), 0);
 }
 
 function pluralize(count, words) {
